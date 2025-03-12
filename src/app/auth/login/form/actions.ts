@@ -1,11 +1,11 @@
-'use server';
+"use server";
 
-import { lucia } from '@/lib/auth';
-import bcrypt from 'bcrypt';
-import { cookies } from 'next/headers';
-import { redirect } from 'next/navigation';
-import prisma from '../../../../lib/prisma';
-import { validate } from './validation';
+import { lucia } from "@/lib/auth";
+import bcrypt from "bcrypt";
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
+import prisma from "../../../../../lib/prisma";
+import { validate } from "./validation";
 
 export interface ActionResult {
   errorTitle?: string;
@@ -13,8 +13,8 @@ export interface ActionResult {
 }
 
 export async function login(prevState: ActionResult, formData: FormData): Promise<ActionResult> {
-  const email = formData.get('email');
-  const password = formData.get('password');
+  const email = formData.get("email");
+  const password = formData.get("password");
 
   const values = validate({
     email: email as string,
@@ -23,8 +23,8 @@ export async function login(prevState: ActionResult, formData: FormData): Promis
 
   if (!values.success) {
     return {
-      errorTitle: 'Invalid credentials',
-      errorMessage: values.error.issues.map((issue) => issue.message).join(', '),
+      errorTitle: "Invalid credentials",
+      errorMessage: values.error.issues.map((issue) => issue.message).join(", "),
     };
   }
 
@@ -36,8 +36,8 @@ export async function login(prevState: ActionResult, formData: FormData): Promis
 
   if (!existingUser) {
     return {
-      errorTitle: 'User not found',
-      errorMessage: 'User not found',
+      errorTitle: "User not found",
+      errorMessage: "User not found",
     };
   }
 
@@ -45,16 +45,16 @@ export async function login(prevState: ActionResult, formData: FormData): Promis
 
   if (!passwordsMatch) {
     return {
-      errorTitle: 'Invalid credentials',
-      errorMessage: 'Invalid credentials',
+      errorTitle: "Invalid credentials",
+      errorMessage: "Invalid credentials",
     };
   }
 
   const session = await lucia.createSession(existingUser.id, null);
-  
+
   const sessionCookie = lucia.createSessionCookie(session.id);
 
   (await cookies()).set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes);
 
-  return redirect('/dashboard');
+  return redirect("/dashboard");
 }

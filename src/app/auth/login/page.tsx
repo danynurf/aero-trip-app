@@ -1,5 +1,5 @@
 import { Metadata } from "next";
-import AuthForm from "../form";
+import AuthForm from "./form";
 
 export const metadata: Metadata = {
   title: "Login",
