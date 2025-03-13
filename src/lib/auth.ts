@@ -1,6 +1,6 @@
 import { PrismaAdapter } from "@lucia-auth/adapter-prisma";
 import { PrismaClient, UserRole } from "@prisma/client";
-import { Lucia, RegisteredDatabaseSessionAttributes, Session, User } from "lucia";
+import { Lucia, RegisteredDatabaseUserAttributes, Session, User } from "lucia";
 import { cookies } from "next/headers";
 import { cache } from "react";
 
@@ -18,10 +18,10 @@ export const lucia = new Lucia(adapter, {
 			secure: process.env.NODE_ENV === "production"
 		},
 	},
-	getSessionAttributes: (attributes: RegisteredDatabaseSessionAttributes) => {
+	getUserAttributes: (attributes: RegisteredDatabaseUserAttributes) => {
 		return {
-			name: attributes?.name,
 			role: attributes?.role,
+			name: attributes?.name,
 			email: attributes?.email,
 			passport: attributes?.passport,
 		}
@@ -44,6 +44,7 @@ export const getUser = cache(async (): Promise<{ user: User | null, session: Ses
 	} catch {
 		// Next.js throws error when attempting to set cookies when rendering page
 	}
+	
 	return { user, session };
 });
 
@@ -51,10 +52,10 @@ export const getUser = cache(async (): Promise<{ user: User | null, session: Ses
 declare module "lucia" {
 	interface Register {
 		Lucia: typeof lucia;
-		DatabaseSessionAttributes: {
+		DatabaseUserAttributes: {
+			role: UserRole;
 			name: string;
 			email: string;
-			role: UserRole;
 			passport: string | null;
 		} | null;
 	}
