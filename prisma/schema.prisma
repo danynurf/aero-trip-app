@@ -53,10 +53,9 @@ model Session {
 
 model Airplane {
   id        String   @id @default(cuid())
-  code      String   @default("ABC-123")
+  code      String   @default("ABC-123") @unique
   name      String
   image     String
-  type      TypeSeat
   flights   Flight[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
