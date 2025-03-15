@@ -18,7 +18,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
   }
 
   return (
-    <div className="flex h-screen w-screen">
+    <div className="flex w-full min-h-screen">
       <header className="w-full h-[80px] bg-white border-b-1 border-gray-200 absolute top-0 left-0 z-10 flex items-center px-4">
         <Button
           asChild
@@ -27,7 +27,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
           <Link href={`/dashboard/`}>Aero Trip Dashboard</Link>
         </Button>
       </header>
-      <aside className="w-[250px] h-full bg-white border-r-1 border-gray-200 absolute top-0 left-0 pt-[80px] flex flex-col justify-between">
+      <aside className="w-[250px] h-screen bg-white border-r-1 border-gray-200 absolute top-0 left-0 pt-[80px] flex flex-col">
         <nav className="flex flex-col gap-2">
           <Button
             asChild
@@ -62,7 +62,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
         </nav>
         <BtnLogout />
       </aside>
-      <main className="flex-1 p-[2rem] pt-[calc(80px+1.5rem)] ml-[250px]">{children}</main>
+      <main className="flex-1 p-[2rem] pt-[calc(80px+1.5rem)] ml-[250px] w-full">{children}</main>
     </div>
   );
 }
