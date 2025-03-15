@@ -5,16 +5,22 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { ActionResult } from "@/app/auth/login/form/actions";
 import { useActionState, useEffect } from "react";
-import { saveAirplane } from "../lib/actions";
+import { saveAirplane, updateAirplane } from "../lib/actions";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import type { Airplane } from "@prisma/client";
+
 const initialState: ActionResult = {
   errorTitle: undefined,
   errorMessage: undefined,
 };
 
-export default function FormAirplane() {
-  const [state, formAction, pending] = useActionState(saveAirplane, initialState);
+export default function FormAirplane({ airplane }: { airplane: Airplane | null }) {
+  const updateAirplaneWithId = (state: ActionResult, formData: FormData) => {
+    return updateAirplane(state, airplane?.id ?? "", formData);
+  }
+  
+  const [state, formAction, pending] = useActionState(airplane ? updateAirplaneWithId : saveAirplane, initialState);
 
   useEffect(() => {
     if (state.errorTitle) {
@@ -31,6 +37,7 @@ export default function FormAirplane() {
         <Input
           id="code"
           name="code"
+          defaultValue={airplane?.code}
           placeholder="Enter code"
           required
         />
@@ -40,6 +47,7 @@ export default function FormAirplane() {
         <Input
           id="name"
           name="name"
+          defaultValue={airplane?.name}
           placeholder="Enter name"
           required
         />
@@ -50,12 +58,11 @@ export default function FormAirplane() {
           id="image"
           name="image"
           type="file"
-          required
         />
       </div>
       <Button type="submit" disabled={pending}>
         {pending && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
-        {pending ? "Creating..." : "Create"}
+        {pending ? "Saving..." : "Save"}
       </Button>
     </form>
   );
