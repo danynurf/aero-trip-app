@@ -4,9 +4,10 @@ import { Button } from "@/components/ui/button";
 import { getUrlImage } from "@/lib/supabase";
 import { Airplane } from "@prisma/client";
 import { ColumnDef } from "@tanstack/react-table";
-import { Pencil, Trash } from "lucide-react";
+import { Pencil } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import DeleteAirplane from "./delete";
 
 export const columns: ColumnDef<Airplane>[] = [
   {
@@ -48,9 +49,7 @@ export const columns: ColumnDef<Airplane>[] = [
               <Pencil />
             </Link>
           </Button>
-          <Button variant="outline">
-            <Trash />
-          </Button>
+          <DeleteAirplane id={plane.id} />
         </div>
       );
     },
