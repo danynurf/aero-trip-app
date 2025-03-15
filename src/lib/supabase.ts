@@ -38,3 +38,20 @@ export const getUrlImage = (fileName: string) => {
   const { data } = supabase.storage.from("image-upload").getPublicUrl("public/airplanes/" + fileName);
   return data.publicUrl;
 };
+
+export const deleteImage = async (fileName: string) => {
+  try {
+    const { data, error } = await supabase.storage.from("image-upload").remove([`public/airplanes/${fileName}`]);
+    if (error) {
+      throw error;
+    }
+    return {
+      ...data,
+      fileName,
+    };
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+};
+
