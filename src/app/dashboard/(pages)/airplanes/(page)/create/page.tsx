@@ -6,7 +6,7 @@ export default function CreateAirplanePage() {
       <div className="flex items-center justify-between mb-4">
         <h1 className="text-2xl font-bold">Airplanes</h1>
       </div>
-      <FormAirplane /> 
+      <FormAirplane airplane={null} /> 
     </div>
   );
 }
