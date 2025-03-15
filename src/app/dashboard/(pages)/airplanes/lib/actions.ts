@@ -1,10 +1,10 @@
 "use server";
 
 import { ActionResult } from "@/app/auth/login/form/actions";
-import { uploadImage } from "@/lib/supabase";
+import prisma from "@/lib/prisma";
+import { deleteImage, uploadImage } from "@/lib/supabase";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import prisma from "@/lib/prisma";
 import { airplaneSchema } from "./validation";
 
 export async function getAirplaneById(id: string) {
@@ -137,4 +137,41 @@ export async function updateAirplane(prevState: ActionResult,id: string, formDat
 
   revalidatePath("/dashboard/airplanes");
   redirect("/dashboard/airplanes");
+}
+
+export async function deleteAirplane(id: string): Promise<ActionResult | undefined> {
+  const airplane = await prisma.airplane.findUnique({
+    where: { id },
+  });
+
+  if (!airplane) {
+    return {
+      errorTitle: "Airplane not found",
+      errorMessage: "Please try again",
+    };
+  }
+
+  const data = await deleteImage(airplane.image);
+
+  if (data instanceof Error) {
+    return {
+      errorTitle: "Error deleting image",
+      errorMessage: data.message,
+    };
+  }
+  
+  try {
+    await prisma.airplane.delete({
+      where: { id },
+    });
+  } catch (error) {
+    console.error(error);
+    
+    return {
+      errorTitle: "Error deleting airplane",
+      errorMessage: error instanceof Error ? error.message : "An unknown error occurred",
+    };
+  }
+
+  revalidatePath("/dashboard/airplanes");
 }
