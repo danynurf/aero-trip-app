@@ -1,14 +1,13 @@
 "use client";
 
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 import { ActionResult } from "@/app/auth/login/form/actions";
-import { useActionState, useEffect } from "react";
-import { saveAirplane, updateAirplane } from "../lib/actions";
-import { Loader2 } from "lucide-react";
-import { toast } from "sonner";
+import { BtnSubmit } from "@/app/dashboard/components/btn-submit";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import type { Airplane } from "@prisma/client";
+import { useActionState, useEffect } from "react";
+import { toast } from "sonner";
+import { saveAirplane, updateAirplane } from "../lib/actions";
 
 const initialState: ActionResult = {
   errorTitle: undefined,
@@ -60,10 +59,7 @@ export default function FormAirplane({ airplane }: { airplane: Airplane | null }
           type="file"
         />
       </div>
-      <Button type="submit" disabled={pending}>
-        {pending && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
-        {pending ? "Saving..." : "Save"}
-      </Button>
+      <BtnSubmit pending={pending} />
     </form>
   );
 }
