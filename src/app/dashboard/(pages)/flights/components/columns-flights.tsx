@@ -1,14 +1,18 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import type { Airplane, Flight, FlightSeat,  } from "@prisma/client";
+import { getUrlImage } from "@/lib/supabase";
+import type { Airplane, Flight, FlightSeat } from "@prisma/client";
 import type { ColumnDef } from "@tanstack/react-table";
 import { Pencil } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
+import ColumnRouteFlight from "./column-route-flight";
+import ColumnSeatPrice from "./column-seat-price";
 
 export type FlightColumn = Flight & {
   airplane: Airplane;
-  seats: FlightSeat[];
+  flightSeats: FlightSeat[];
 };
 
 export const columns: ColumnDef<FlightColumn>[] = [
@@ -16,21 +20,36 @@ export const columns: ColumnDef<FlightColumn>[] = [
     header: "Pesawat",
     accessorKey: "airplaneId",
     cell: ({ row }) => {
-      return row.original.airplane.name;
+      const data = row.original;
+
+      return (
+        <div className="flex items-center gap-2">
+          <Image
+            src={getUrlImage(data.airplane.image.toString())}
+            alt={data.airplane.name}
+            width={100}
+            height={100}
+            className="rounded-xl"
+          />
+          <p>{data.airplane.name}</p>
+        </div>
+      );
     },
   },
   {
     header: "Route",
     accessorKey: "departureCity",
     cell: ({ row }) => {
-      return `${row.original.departureCity} - ${row.original.destinationCity}`;
+      return <ColumnRouteFlight {...row.original} />;
     },
   },
   {
     header: "Price",
     accessorKey: "price",
     cell: ({ row }) => {
-      return `Rp. ${row.original.price}`;
+      const data = row.original;
+
+      return <ColumnSeatPrice {...data} />;
     },
   },
   {
@@ -42,6 +61,7 @@ export const columns: ColumnDef<FlightColumn>[] = [
         <div className="flex items-center gap-2">
           <Button
             variant="outline"
+            className="size-10"
             asChild
           >
             <Link href={`/dashboard/flights/${flight.id}/edit`}>
@@ -54,4 +74,3 @@ export const columns: ColumnDef<FlightColumn>[] = [
     },
   },
 ];
-
