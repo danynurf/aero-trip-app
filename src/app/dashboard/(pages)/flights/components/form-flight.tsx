@@ -4,32 +4,43 @@ import { BtnSubmit } from "@/app/dashboard/components/btn-submit";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import type { Airplane } from "@prisma/client";
+import type { Airplane, Flight } from "@prisma/client";
 import { useActionState, useEffect } from "react";
-import { createFlight } from "../lib/actions";
+import { createFlight, updateFlight } from "../lib/actions";
 import { toast } from "sonner";
 import { ActionResult } from "@/app/auth/login/form/actions";
+import { dateFormat } from "@/lib/utils";
 
 const initialState: ActionResult = {
   errorTitle: undefined,
   errorMessage: undefined,
 };
 
-export default function FormFlight({ airplanes }: { airplanes: Airplane[] }) {
-  const [state, formAction, pending] = useActionState(createFlight, initialState);
+export default function FormFlight({ airplanes, value }: { airplanes: Airplane[]; value?: Flight | null }) {
+  const updateFlightWithId = (state: ActionResult, formData: FormData) => {
+    return updateFlight(state, value?.id ?? "", formData);
+  };
+
+  const [state, formAction, pending] = useActionState(value ? updateFlightWithId : createFlight, initialState);
 
   useEffect(() => {
     if (state?.errorTitle) {
       toast.error(state.errorTitle, { description: state.errorMessage });
     }
   }, [state]);
-  
+
   return (
-    <form action={formAction} className="space-y-6">
+    <form
+      action={formAction}
+      className="space-y-6"
+    >
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2 w-full">
           <Label htmlFor="airplaneId">Airplane</Label>
-          <Select name="airplaneId">
+          <Select
+            name="airplaneId"
+            defaultValue={value?.airplaneId}
+          >
             <SelectTrigger
               id="airplaneId"
               className="w-full cursor-pointer"
@@ -37,11 +48,12 @@ export default function FormFlight({ airplanes }: { airplanes: Airplane[] }) {
               <SelectValue placeholder="Select Airplane" />
             </SelectTrigger>
             <SelectContent>
-              {airplanes.length === 0 && (
-                <p className="text-muted-foreground text-xs">No airplanes found</p>
-              )}
+              {airplanes.length === 0 && <p className="text-muted-foreground text-xs">No airplanes found</p>}
               {airplanes.map((airplane) => (
-                <SelectItem key={airplane.id} value={airplane.id}>
+                <SelectItem
+                  key={airplane.id}
+                  value={airplane.id}
+                >
                   {airplane.name}
                 </SelectItem>
               ))}
@@ -56,6 +68,7 @@ export default function FormFlight({ airplanes }: { airplanes: Airplane[] }) {
               name="price"
               type="number"
               min={0}
+              defaultValue={value?.price}
               placeholder="Enter price"
               required
             />
@@ -73,6 +86,7 @@ export default function FormFlight({ airplanes }: { airplanes: Airplane[] }) {
             name="departureCity"
             placeholder="Enter departure city"
             required
+            defaultValue={value?.departureCity}
           />
         </div>
         <div className="space-y-2">
@@ -83,6 +97,7 @@ export default function FormFlight({ airplanes }: { airplanes: Airplane[] }) {
             type="datetime-local"
             className="block"
             required
+            defaultValue={dateFormat(value?.departureDate ?? new Date(), "YYYY-MM-DDTHH:mm")}
           />
         </div>
         <div className="space-y-2">
@@ -92,6 +107,7 @@ export default function FormFlight({ airplanes }: { airplanes: Airplane[] }) {
             name="departureCityCode"
             placeholder="Enter departure city code"
             required
+            defaultValue={value?.departureCityCode}
           />
         </div>
       </div>
@@ -103,6 +119,7 @@ export default function FormFlight({ airplanes }: { airplanes: Airplane[] }) {
             name="destinationCity"
             placeholder="Enter destination city"
             required
+            defaultValue={value?.destinationCity}
           />
         </div>
         <div className="space-y-2">
@@ -113,6 +130,7 @@ export default function FormFlight({ airplanes }: { airplanes: Airplane[] }) {
             type="datetime-local"
             className="block"
             required
+            defaultValue={dateFormat(value?.arrivalDate ?? new Date(), "YYYY-MM-DDTHH:mm")}
           />
         </div>
         <div className="space-y-2">
@@ -122,6 +140,7 @@ export default function FormFlight({ airplanes }: { airplanes: Airplane[] }) {
             name="destinationCityCode"
             placeholder="Enter destination city code"
             required
+            defaultValue={value?.destinationCityCode}
           />
         </div>
       </div>
